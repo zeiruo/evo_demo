@@ -16,26 +16,32 @@ from numpy.linalg import norm
 from scipy.spatial.distance import cdist, pdist, euclidean
 
 from matplotlib import animation, rc
-from IPython.display import HTML
+
 
 
 ###########################################################################################
+
+
 
 class swarm(object):
 
 	def __init__(self):
 
 		self.agents = []
-		self.holding = []
-		self.boxnum = []
-
 		self.speed = 0.5
-		self.headings = []
 		self.size = 0
 		self.behaviour = 'none'
 
+		self.centroids = []
 		self.centermass = [0,0]
+		self.median = [0,0]
+		self.upper = [0,0]
+		self.lower  = [0,0]
 		self.spread = 0
+
+
+		self.field = []
+		self.grid = []
 
 		self.param = 3
 		self.map = 'none'
@@ -45,15 +51,24 @@ class swarm(object):
 		self.origin = np.array([0,0])
 		self.start = np.array([])
 
+		self.holding = []
+		self.boxnum = []
+
+		self.headings = []
+		
+
+
 	def gen_agents(self):
+
 		dim = 0.001
+		self.agents = np.zeros((self.size,2))
 		self.holding = np.zeros(self.size)
 		self.boxnum = np.zeros(self.size)
-		self.agents = np.zeros((self.size,2))
 		self.headings = 0.0314*np.random.randint(-100,100 ,self.size)
 		for n in range(self.size):
-			self.agents[n] = np.array([dim*n - (dim*(self.size-1)/2),0])
-			
+			self.agents[n] = np.array([dim*n - (dim*(self.size-1)/2) + self.origin[0], 0 + self.origin[1]])
+		
+
 	def reset(self):
 
 		dim = 0.001
@@ -65,18 +80,37 @@ class swarm(object):
 		for n in range(self.size):
 			self.agents[n] = np.array([dim*n - (dim*(self.size-1)/2),0])
 
-	def iterate(self):
+		self.headings = 0.0314*np.random.randint(-100,100 ,self.size)
+	
+
+	def iterate(self, noise):
 		global env
 		if self.behaviour == 'aggregate':
 			aggregate(self, self.param)
 		if self.behaviour == 'random':
-			random_walk(self)
-		if self.behaviour == 'flock':
-			flock(self)
+			random_walk(self, self.param)
 		if self.behaviour == 'rot_clock':
-			rotate(self, [-2,1])
+			rotate(self, [-2,2], self.param)
 		if self.behaviour == 'rot_anti':
-			rotate(self, [-1,4])
+			rotate(self, [-1,3], self.param)
+		if self.behaviour == 'disperse':
+			dispersion(self, np.array([0,0]), self.param, noise)
+		if self.behaviour == 'north':
+			dispersion(self, np.array([0,1]), self.param,noise)
+		if self.behaviour == 'south':
+			dispersion(self, np.array([0,-1]), self.param,noise)
+		if self.behaviour == 'west':
+			dispersion(self, np.array([-1,0]), self.param,noise)
+		if self.behaviour == 'east':
+			dispersion(self, np.array([1,0]), self.param,noise)
+		if self.behaviour == 'northwest':
+			dispersion(self, np.array([-1,1]), self.param,noise)
+		if self.behaviour == 'northeast':
+			dispersion(self, np.array([1,1]), self.param,noise)
+		if self.behaviour == 'southwest':
+			dispersion(self, np.array([-1,-1]), self.param,noise)
+		if self.behaviour == 'southeast':
+			dispersion(self, np.array([1,-1]), self.param,noise)
 		if self.behaviour == 'avoidance':
 			avoidance(self, env)
 
@@ -86,12 +120,15 @@ class swarm(object):
 		# Calculate connectivity matrix between agents
 		mag = cdist(self.agents, self.agents)
 		totmag = np.sum(mag)
-		totpos = np.sum(self.agents, axis=0)
+		#totpos = np.sum(self.agents, axis=0)
 
 		# calculate density and center of mass of the swarm
 		self.spread = totmag/((self.size -1)*self.size)
-		self.centermass[0] = (totpos[0])/(self.size)
-		self.centermass[1] = (totpos[1])/(self.size)
+		# self.centermass[0] = (totpos[0])/(self.size)
+		# self.centermass[1] = (totpos[1])/(self.size)
+		self.median = np.median(self.agents, axis = 0)
+		# self.upper = np.quantile(self.agents, 0.75, axis = 0)
+		# self.lower = np.quantile(self.agents, 0.25, axis = 0)
 
 	def copy(self):
 		newswarm = swarm()
@@ -99,10 +136,12 @@ class swarm(object):
 		newswarm.speed = self.speed
 		newswarm.size = self.size
 		newswarm.behaviour = 'none'
+		swarm.origin = self.origin
 		newswarm.map = self.map.copy()
+		newswarm.field = self.field
+		newswarm.grid = self.grid
 		#newswarm.beacon_set = self.beacon_set
 		return newswarm
-
 
 # Functions and definitions for set of box objects.
 
@@ -446,54 +485,136 @@ def avoidance(agents, map):
 	return F
 
 
-def rotate(swarm, direction):
+def potentialField_map(env):
 
-	noise = 0.03*np.random.randint(direction[0], direction[1], swarm.size)
-	swarm.headings += noise
+	# Set granularity of field map
+	granularity = 0.5
 
-	# Calculate new heading vector
-	gx = 7*np.cos(swarm.headings)
-	gy = 7*np.sin(swarm.headings)
-	G = np.array([[gx[n], gy[n]] for n in range(0, swarm.size)])
-	A = avoidance(swarm.agents, swarm.map)
-	a = G - A
+	x = np.arange(-75, 74.9, granularity)
+	y = np.arange(-40, 39.9, granularity)
+	positions = np.zeros((len(x)*len(y), 2))
 
+	count = 0
+	for k in y:
+		for j in x:
+			positions[count][0] = j 
+			positions[count][1] = k
+			count += 1
+
+	size = len(positions)
+	# Compute vectors between agents and wall planes
+	
+	diffh = np.array([env.planeh-positions[n][1] for n in range(size)])
+	diffv = np.array([env.planev-positions[n][0] for n in range(size)])
+	
+	# split agent positions into x and y arrays
+	agentsx = positions.T[0]
+	agentsy = positions.T[1]
+
+	# Check intersection of agents with walls
+	low = agentsx[:, np.newaxis] >= env.limh.T[0]
+	up = agentsx[:, np.newaxis] <= env.limh.T[1]
+	intmat = up*low
+
+	# For larger environments
+	A = 10; B = 10
+	# For smaller environments
+	#A = 2; B = 5
+
+	# Compute force based vector and multiply by intersection matrix
+	Fy = np.exp(-A*np.abs(diffh) + B)*diffh*intmat
+	
+	low = agentsy[:, np.newaxis] >= env.limv.T[0]
+	up = agentsy[:, np.newaxis] <= env.limv.T[1]
+	intmat = up*low
+	now = time.time()
+	Fx = np.exp(-A*np.abs(diffv) + B)*diffv*intmat
+
+	# Sum the forces between every wall into one force.
+	Fx = np.sum(Fx, axis=1)
+	Fy = np.sum(Fy, axis=1)
+	# Combine x and y force vectors
+
+	F = np.stack((Fx, Fy), axis = 1)
+
+	return F, positions
+
+def fieldmap_avoidance(swarm):
+
+	F = np.zeros((swarm.size, 2))
+
+	x = np.arange(-75,74.8,0.5)
+	y = np.arange(-40,39.9,0.5)
+
+	f = swarm.field.reshape((len(y),len(x),2))
+
+	x = np.round(2*swarm.agents.T[0])/2
+	y = np.round(2*swarm.agents.T[1])/2
+
+	inx = np.round(2*(y+40))
+	iny = np.round(2*(x+75))
+
+	for n in range(swarm.size):
+		# Take agent position and find position in grid
+		F[n] = f[int(inx[n])][int(iny[n])]
+	
+	return F
+
+
+def dispersion(swarm, vector, param, noise):
+
+	R = param; r = 2; A = 1; a = 20
+
+	# Compute euclidean distance between agents
+	mag = cdist(swarm.agents, swarm.agents)
+
+	# Compute vectors between agents
+	diff = swarm.agents[:,:,np.newaxis]-swarm.agents.T[np.newaxis,:,:] 
+
+	A = fieldmap_avoidance(swarm)
+
+	#B = beacon(swarm)
+	
+	a = R*r*np.exp(-mag/r)[:,np.newaxis,:]*diff/(swarm.size-1)	
+	a = np.sum(a, axis = 0).T
+
+	a += A - vector + noise
+	
 	vecx = a.T[0]
 	vecy = a.T[1]
-
 	angles = np.arctan2(vecy, vecx)
 	Wx = swarm.speed*np.cos(angles)
 	Wy = swarm.speed*np.sin(angles)
 
-	W = np.array([[Wx[n], Wy[n]] for n in range(0, swarm.size)])
+	#W = -np.array([[Wx[n], Wy[n]] for n in range(0, swarm.size)])
+	W = -np.stack((Wx, Wy), axis = 1)
 	swarm.agents += W 
 
 
-def flock(swarm):
+def rotate(swarm, direction, param):
 
-	noise = 0.01*np.random.randint(-100., 100., (swarm.size))
+	noise = param*np.random.randint(direction[0], direction[1], swarm.size)
 	swarm.headings += noise
 
-	avg = np.sum(swarm.headings)/swarm.size
-	swarm.headings += 0.001*avg
-
-	R = 100; r = 2; A = 1; a = 20
-	W = np.zeros((swarm.size, 2))
-	B = np.zeros((swarm.size, 2))
-	
-	# Compute euclidean distance between agents
-	mag = cdist(swarm.agents, swarm.agents)
-	# Compute vectors between agents
-	diff = swarm.agents[:,:,np.newaxis]-swarm.agents.T[np.newaxis,:,:] 
-	rep = R*r*np.exp(-mag/r)[:,np.newaxis,:]*diff/(swarm.size-1)	
-	rep = np.sum(a, axis =0).T
-
 	# Calculate new heading vector
-	gx = 10*np.cos(swarm.headings)
-	gy = 10*np.sin(swarm.headings)
+	gx = 1*np.cos(swarm.headings)
+	gy = 1*np.sin(swarm.headings)
 	G = -np.array([[gx[n], gy[n]] for n in range(0, swarm.size)])
+
+	# Agent avoidance
+	R = 2; r = 2; A = 1; a = 20
+	# Compute euclidean distance between agents
+	# mag = cdist(swarm.agents, swarm.agents)
+	# # Compute vectors between agents
+	# diff = swarm.agents[:,:,np.newaxis]-swarm.agents.T[np.newaxis,:,:] 
+	# a = R*r*np.exp(-mag/r)[:,np.newaxis,:]*diff/(swarm.size-1)	
+	# a = np.sum(a, axis =0).T
+
+	a = np.zeros((swarm.size,2))
+	B = np.zeros((swarm.size, 2))
+	#B = beacon(swarm)
 	A = avoidance(swarm.agents, swarm.map)
-	a = G + A + rep
+	a += G + A + B
 
 	vecx = a.T[0]
 	vecy = a.T[1]
@@ -501,23 +622,32 @@ def flock(swarm):
 	angles = np.arctan2(vecy, vecx)
 	Wx = swarm.speed*np.cos(angles)
 	Wy = swarm.speed*np.sin(angles)
+
 	W = -np.array([[Wx[n], Wy[n]] for n in range(0, swarm.size)])
 	swarm.agents += W 
 
 
-def random_walk(swarm):
+def random_walk(swarm, param):
 
 	alpha = 0.01; beta = 50
 
-	noise = alpha*np.random.randint(-beta, beta, (swarm.size))
+	noise = param*np.random.randint(-beta, beta, (swarm.size))
 	swarm.headings += noise
 
 	# Calculate new heading vector
-	gx = 7*np.cos(swarm.headings)
-	gy = 7*np.sin(swarm.headings)
+	gx = 1*np.cos(swarm.headings)
+	gy = 1*np.sin(swarm.headings)
 	G = -np.array([[gx[n], gy[n]] for n in range(0, swarm.size)])
+
+	# Agent avoidance
+	R = 20; r = 2; A = 1; a = 20	
+	
+	a = np.zeros((swarm.size, 2))
+
+	B = np.zeros((swarm.size, 2))
+	#B = beacon(swarm)
 	A = avoidance(swarm.agents, swarm.map)
-	a = G + A
+	a += A + G + B
 
 	vecx = a.T[0]
 	vecy = a.T[1]
@@ -526,5 +656,6 @@ def random_walk(swarm):
 	Wx = swarm.speed*np.cos(angles)
 	Wy = swarm.speed*np.sin(angles)
 
-	W = -np.array([[Wx[n], Wy[n]] for n in range(0, swarm.size)])
-	swarm.agents += W 
+	W = -np.stack((Wx, Wy), axis = 1)
+	swarm.agents += W
+

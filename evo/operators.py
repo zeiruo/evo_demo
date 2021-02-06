@@ -657,15 +657,11 @@ def save_traveller(pop, tot_travellers, num_travellers, file):
 
 
 
-def hallfame(pop, hall, hallsize, file):
+def hallfame(pop, hall, hallsize):
 
 	hall = hall + pop
 	hall.sort(key=lambda x: x.fitness, reverse=True)
 	hall = [ind.copy() for ind in hall[0:hallsize]]
-
-	# Save hall of fame object
-	with open(file, 'wb') as output:
-		pickle.dump(hall, output, pickle.HIGHEST_PROTOCOL)
 
 	return hall
 
@@ -728,27 +724,16 @@ def neighbour_selection(pop):
 
 	return newpop
 
-def log(pop, hall, logpop, logfit, logavg, logmax, g, filename):
+def log(pop, hall, logpop, logfit, logavg, logmax, g):
 
 	f = []; tot = 0; maxfit = 0
 
-	file = open(filename, 'a+')
-	file.write('\n\n\n GENERATION: %d' %g )
-	file.write('\n ID: %s' % id(pop))
 	for i in range(0, len(pop)):
 		f.append(pop[i].fitness)
 		tot += pop[i].fitness
 		
 		if pop[i].fitness > maxfit:
 			maxfit = pop[i].fitness
-
-		file.write('\n\nIndividual Fitness = %f' % pop[i].fitness)
-		file.write('\n%s' % pop[i].tree)
-
-	file.write('\n\nHALL OF FAME -----------------------------------------------------')
-	for i in range(0, len(hall)):
-		file.write('\n\nIndividual Fitness = %f' % hall[i].fitness)
-		file.write('\n%s' % hall[i].tree)
 	
 	avg = tot/len(pop)
 	logfit.append(f)
@@ -756,13 +741,13 @@ def log(pop, hall, logpop, logfit, logavg, logmax, g, filename):
 	logavg.append(avg)
 	logpop.append(pop)
 
-	file.write('\n\nAverage Fitness: %s' % logavg)
-	print('\n\nAverage Fitness: %s' % logavg)
-	file.write('\n\nMaximum Fitness: %s' % logmax)
+	print('\n' + 80*'-')
+	print('\nFINISHED GENERATION')
+	
+	print('\nAverage Fitness: %s' % logavg)
 	print('\nMaximum Fitness: %s' % logmax)
-	#file.write('\n\nPop Fitnesses: %s' % f)
-	file.write('\n============================================================================================================================================')
-	file.close()
+	print(80*'-')
+
 
 
 def gen_analysis(pop, stats, filename):
