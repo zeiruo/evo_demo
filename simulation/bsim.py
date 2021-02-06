@@ -436,6 +436,13 @@ class map(object):
 	def env1(self):
 		# Bounding Walls ---------------------------------
 		box = make_box(50, 50, [0, 0]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
+		wall = make_wall(); wall.start = [-25, 0]; wall.end = [-15,0]; self.obsticles.append(wall)
+		wall = make_wall(); wall.start = [-15, 0]; wall.end = [-15,10]; self.obsticles.append(wall)
+
+		wall = make_wall(); wall.start = [25, 0]; wall.end = [15,0]; self.obsticles.append(wall)
+		wall = make_wall(); wall.start = [15, 0]; wall.end = [15,-10]; self.obsticles.append(wall)
+
+
 
 	def env2(self):
 		# Bounding Walls ---------------------------------

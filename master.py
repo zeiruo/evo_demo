@@ -171,8 +171,7 @@ if __name__ == '__main__':
 		pop = []
 		pop = list(newpop + elite)
 
-		print('\n\nFinished generation:')
-		print('Max fitness: ', )
+		
 
 
 		
