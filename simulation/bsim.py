@@ -436,11 +436,21 @@ class map(object):
 	def env1(self):
 		# Bounding Walls ---------------------------------
 		box = make_box(50, 50, [0, 0]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
-		wall = make_wall(); wall.start = [-25, 0]; wall.end = [-15,0]; self.obsticles.append(wall)
-		wall = make_wall(); wall.start = [-15, 0]; wall.end = [-15,10]; self.obsticles.append(wall)
 
-		wall = make_wall(); wall.start = [25, 0]; wall.end = [15,0]; self.obsticles.append(wall)
-		wall = make_wall(); wall.start = [15, 0]; wall.end = [15,-10]; self.obsticles.append(wall)
+		wall = make_wall(); wall.start = [25, 0]; wall.end = [10,0]; self.obsticles.append(wall)
+		wall = make_wall(); wall.start = [10, 0]; wall.end = [10,-15]; self.obsticles.append(wall)
+		wall = make_wall(); wall.start = [10, -15]; wall.end = [15,-15]; self.obsticles.append(wall)
+
+		# upper room
+		wall = make_wall(); wall.start = [-25, 14]; wall.end = [-15,14]; self.obsticles.append(wall)
+		wall = make_wall(); wall.start = [-10, 14]; wall.end = [0,14]; self.obsticles.append(wall)
+		wall = make_wall(); wall.start = [0, 14]; wall.end = [0,25]; self.obsticles.append(wall)
+
+		wall = make_wall(); wall.start = [12.5, 25]; wall.end = [12.5,14]; self.obsticles.append(wall)
+
+
+		wall = make_wall(); wall.start = [-17, -17]; wall.end = [4,-17]; self.obsticles.append(wall)
+		wall = make_wall(); wall.start = [-17, -17]; wall.end = [-17,4]; self.obsticles.append(wall)
 
 
 
