@@ -383,6 +383,35 @@ class target_set(object):
 		self.old_state = updated
 		return score
 
+	def get_state_normal(self, swarm, t, timesteps):
+
+		# Get the target state without reward decay
+
+		now = time.time()
+
+		score = 0
+		# adjacency matrix of agents and targets
+		mag = cdist(swarm.agents, self.targets)
+
+		# Check which distances are less than detection range
+		a = mag < self.radius
+		# Sum over agent axis 
+		detected = np.sum(a, axis = 0)
+		# convert to boolean, targets with 0 detections set to false.
+		detected = detected > 0
+		# Check detection against previous state. If a target is already found return false.
+		updated = np.logical_or(detected, self.old_state) 
+		
+		# Accumulate scores for each target found
+		# Tracks the total targets found so far. Not this iteration.
+		score = np.sum(updated)
+		self.coverage = score/len(self.targets)	
+
+
+
+		self.old_state = updated
+		return score
+
 	def ad_state(self, swarm, t):
 
 		score = 0
