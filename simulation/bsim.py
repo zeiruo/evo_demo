@@ -971,7 +971,7 @@ def aggregate(swarm, param, noise):
 	diff = swarm.agents[:,:,np.newaxis]-swarm.agents.T[np.newaxis,:,:] 
 
 	Avoid = fieldmap_avoidance(swarm)
-	B = beacon(swarm)
+	#B = beacon(swarm)
 	
 	repel = R*r*np.exp(-mag/r)[:,np.newaxis,:]*diff/(swarm.size-1)	
 	repel = np.sum(repel, axis = 0).T
