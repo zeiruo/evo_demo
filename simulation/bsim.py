@@ -980,7 +980,7 @@ def aggregate(swarm, param, noise):
 	attract = np.sum(attract, axis = 0).T
 
 	total = 0
-	total += Avoid + B + noise + repel - attract
+	total += Avoid + noise + repel - attract
 	
 	vecx = total.T[0]
 	vecy = total.T[1]
