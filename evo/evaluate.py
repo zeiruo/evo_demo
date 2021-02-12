@@ -144,7 +144,7 @@ def serial_search(pop, oldswarm, targets, genum, timesteps, treecost, field, gri
 			env.gen()
 			swarm.map = env
 
-			targets = asim.target_set()
+			targets = bsim.target_set()
 			targets.set_state('set1')
 			targets.radius = 2.5
 			targets.reset()
