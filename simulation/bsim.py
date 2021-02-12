@@ -456,7 +456,7 @@ class map(object):
 
 		wall = make_wall(); wall.start = [25, 0]; wall.end = [10,0]; self.obsticles.append(wall)
 		wall = make_wall(); wall.start = [10, 0]; wall.end = [10,-15]; self.obsticles.append(wall)
-		wall = make_wall(); wall.start = [10, -15]; wall.end = [15,-15]; self.obsticles.append(wall)
+		# wall = make_wall(); wall.start = [10, -15]; wall.end = [15,-15]; self.obsticles.append(wall)
 
 		# upper room
 		wall = make_wall(); wall.start = [-25, 14]; wall.end = [-15,14]; self.obsticles.append(wall)
@@ -466,8 +466,8 @@ class map(object):
 		wall = make_wall(); wall.start = [12.5, 25]; wall.end = [12.5,14]; self.obsticles.append(wall)
 
 
-		wall = make_wall(); wall.start = [-17, -17]; wall.end = [4,-17]; self.obsticles.append(wall)
-		wall = make_wall(); wall.start = [-17, -17]; wall.end = [-17,4]; self.obsticles.append(wall)
+		wall = make_wall(); wall.start = [-17, -17]; wall.end = [-5,-17]; self.obsticles.append(wall)
+		wall = make_wall(); wall.start = [-17, -17]; wall.end = [-17,-10]; self.obsticles.append(wall)
 
 
 
