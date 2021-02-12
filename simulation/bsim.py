@@ -143,6 +143,275 @@ class swarm(object):
 		#newswarm.beacon_set = self.beacon_set
 		return newswarm
 
+
+class target_set(object):
+
+	def __init__(self):
+		self.targets = []
+		self.radius = 0
+		self.found = 0
+		self.coverage = 0
+		self.old_state = np.zeros(len(self.targets))
+		self.fitmap = []
+
+	def set_state(self, state):
+
+
+		if state == 'set1':
+			self.targets = np.array([[-35,35],[-25,35],[-15,35],[-5,35],[5,35],[15,35],[25,35],[35,35],
+							[-35,25],[-15,25],[-5,25],[5,25],[15,25],[25,25],[35,25],
+							[-35,15],[-15,15],[-5,15],[5,15],[15,15],[25,15],[35,15],
+							[-35,5],[-15,5],[15,5],[25,5],[35,5],
+							[-35,-5],[-25,-5],[-15,-5],[15,-5],[25,-5],[35,-5],
+							[-35,-15],[-25,-15],[-15,-15],[-5,-15],[5,-15],[15,-15],[25,-15],[35,-15],
+							[-35,-25],[-25,-25],[-15,-25],[-5,-25],[5,-25],[15,-25],[25,-25],[35,-25],
+							[-35,-35],[-25,-35],[-15,-35],[-5,-35],[5,-35],[15,-35],[25,-35],[35,-35]])
+
+		if state == 'set2':
+			self.targets = np.array([[-35,35],[-25,35],[-15,35],[-5,35],[5,35],[15,35],[25,35],[35,35],
+							[-35,25],[-25,25], [-15,25],[-5,25],[5,25],[15,25],[25,25],[35,25],
+							[-35,15],[-25,15], [-15,15],[-5,15],[5,15],[15,15],[25,15],[35,15],
+							[-35,5], [-25,5],[-15,5],[15,5],[25,5],[35,5],
+							[-35,-5],[-25,-5],[-15,-5],
+							[-35,-15],[-25,-15],[-15,-15],[-5,-15],[5,-15],[15,-15],[25,-15],[35,-15],
+							[-35,-25],[-25,-25],[-15,-25],[-5,-25],[5,-25],[15,-25],[25,-25],[35,-25],
+							[-35,-35],[-25,-35],[-15,-35],[-5,-35],[5,-35],[15,-35],[25,-35],[35,-35]])
+
+		if state == 'set3':
+			self.targets = np.array([[-35,35],[-25,35],[-15,35],[-5,35],[5,35],[15,35],[25,35],[35,35],
+							[-35,25],[-25,25], [-15,25],[-5,25],[5,25],[15,25],[25,25],[35,25],
+							[-35,15],[-25,15], [-15,15],[-5,15],[5,15],[15,15],[25,15],[35,15],
+							[-35,5], [-25,5],[-15,5],[15,5],[25,5],[35,5],
+							[-35,-5],[-25,-5],[-15,-5], [15,-5], [25,-5], [35,-5],
+							[-35,-15],[-25,-15],[-15,-15],[-5,-15],[5,-15],[15,-15],[25,-15],[35,-15],
+							[-35,-25],[-25,-25],[-15,-25],[-5,-25],[5,-25],[15,-25],[25,-25],[35,-25],
+							[-35,-35],[-25,-35],[-15,-35],[-5,-35],[5,-35],[15,-35],[25,-35],[35,-35]])
+
+		if state == 'set4':
+			self.targets = np.array([[-35,35],[-25,35],[-15,35],[-5,35],[5,35],[15,35],[25,35],[35,35],
+							[-35,25],[-25,25],[-15,25],[-5,25],[5,25],[15,25],[25,25],[35,25],
+							[-35,15],[-25,15],[-15,15],[-5,15],[5,15],[15,15],[25,15],[35,15],
+							[-35,5],[-25,5],[-15,5],[15,5],[25,5],[35,5],
+							[-35,-5],[-25,-5],[-15,-5],[15,-5],[25,-5],[35,-5],
+							[-35,-15],[-25,-15],[-15,-15],[-5,-15],[5,-15],[15,-15],[25,-15],[35,-15],
+							[-35,-25],[-25,-25],[-15,-25],[-5,-25],[5,-25],[15,-25],[25,-25],[35,-25],
+							[-35,-35],[-25,-35],[-15,-35],[-5,-35],[5,-35],[15,-35],[25,-35],[35,-35]])
+
+		if state == 'brlset':
+
+			x = np.arange(-72.5, 74.9, 2.5)
+			y = np.arange(-37.5, 39.9, 2.5)
+			self.targets = np.zeros((len(x)*len(y), 2))
+			
+			count = 0
+			for k in x:
+				for j in y:
+					self.targets[count][0] = k 
+					self.targets[count][1] = j
+					count += 1
+
+		if state == 'minimap':
+
+			x = np.arange(-17.5, 19.9, 2.5)
+			y = np.arange(-17.5, 19.9, 2.5)
+			self.targets = np.zeros((len(x)*len(y), 2))
+			
+			count = 0
+			for k in x:
+				for j in y:
+					self.targets[count][0] = k 
+					self.targets[count][1] = j
+					count += 1
+
+		if state == 'minismall':
+
+			x = np.arange(-9, 9.9, 1)
+			y = np.arange(-9, 9.9, 1)
+			self.targets = np.zeros((len(x)*len(y), 2))
+			
+			count = 0
+			for k in x:
+				for j in y:
+					self.targets[count][0] = k 
+					self.targets[count][1] = j
+					count += 1
+
+		if state == 'miniwide':
+
+			x = np.arange(-19, 19.9, 1)
+			y = np.arange(-9, 9.9, 1)
+			self.targets = np.zeros((len(x)*len(y), 2))
+			
+			count = 0
+			for k in x:
+				for j in y:
+					self.targets[count][0] = k 
+					self.targets[count][1] = j
+					count += 1
+		
+		
+		if state == 'uniform':
+
+			x = np.arange(-40, 45, 3)
+			y = np.arange(-40, 45, 3)
+			self.targets = np.zeros((len(x)*len(y), 2))
+			
+			count = 0
+			for k in x:
+				for j in y:
+					self.targets[count][0] = k 
+					self.targets[count][1] = j
+					count += 1
+
+
+	def fitness_map(self, map, swarm, timesteps):
+
+		granularity = 1
+
+		# x = np.arange(-72.5,74.9,granularity)
+		# y = np.flip(np.arange(-37.5,39.9,granularity))
+
+		x = np.arange(-19,19.9,granularity)
+		y = np.flip(np.arange(-9,9.9,granularity))
+
+		pos = np.zeros((len(y),len(x)))
+
+
+		swarm.behaviour = 'random'
+		swarm.param = 0.01
+
+		total_nodes = len(x)*len(y)
+
+
+		trials = 1
+
+		noise = np.random.uniform(-.1,.1,(trials*timesteps, swarm.size, 2))
+
+		t = 0
+		while t <= trials*timesteps:
+
+			if t%timesteps == 0:
+				swarm.gen_agents()
+
+			swarm.iterate(noise[t-1])
+			swarm.get_state()
+			
+			# Check intersection of agents with targets
+			mag = cdist(self.targets, swarm.agents)
+			dist = mag <= granularity
+
+			# For each target sum the number of detections
+			total = np.sum(dist, axis = 1)
+
+			# Add the new detections to an array of the positions
+			for n in range(len(self.targets)):
+
+				# row = int((self.targets[n][1]+39)/granularity)
+				# col = int((self.targets[n][0]+74)/granularity)
+
+				row = int((self.targets[n][1]+9)/granularity)
+				col = int((self.targets[n][0]+19)/granularity)
+
+				if total[n] >= 1:
+					pos[row][col] += 1
+			
+			t += 1
+
+			sys.stdout.write("Fit map progress: %.2f   \r" % (100*t/(trials*timesteps)) )
+			sys.stdout.flush()
+
+		m = np.max(pos)
+		pos = pos/(trials*timesteps)
+		pos = pos/np.max(pos)
+
+
+		# Visualize the probability heatmap
+		# plt.imshow(pos, origin='lower')
+		# plt.colorbar()
+		# plt.show()
+
+		return pos
+
+
+	def get_state(self, swarm, t, timesteps):
+
+		now = time.time()
+
+		score = 0
+		# adjacency matrix of agents and targets
+		mag = cdist(swarm.agents, self.targets)
+
+		# Check which distances are less than detection range
+		a = mag < self.radius
+		# Sum over agent axis 
+		detected = np.sum(a, axis = 0)
+		# convert to boolean, targets with 0 detections set to false.
+		detected = detected > 0
+		# Check detection against previous state. If a target is already found return false.
+		updated = np.logical_or(detected, self.old_state) 
+		
+		# Accumulate scores for each target found
+		# Tracks the total targets found so far. Not this iteration.
+		score = np.sum(updated)
+		self.coverage = score/len(self.targets)	
+
+	
+		# How many targets were found this iteration.
+		found = np.logical_xor(detected, self.old_state)*detected
+
+		score = 0
+
+		# Determine score based on decay of target rewards.
+
+		# Get indices of found targets
+		found = np.where(found == True)
+		
+		for ind in found[0]:
+
+			# row = int((self.targets[ind][1]+39)/2.5)
+			# col = int((self.targets[ind][0]+74)/2.5)
+
+			row = int((self.targets[ind][1]+9)/1)
+			col = int((self.targets[ind][0]+9)/1)
+
+			# Find the decay constant for the target.
+			decay = self.fitmap[row][col]
+			#value = (1 + (decay)*(-t/timesteps)))
+			#score += (1 + (decay*(-t/timesteps)))
+			score += np.exp(3*((-t*decay)/timesteps))
+
+		self.old_state = updated
+		return score
+
+	def ad_state(self, swarm, t):
+
+		score = 0
+		# adjacency matrix of agents and targets
+		mag = cdist(swarm.agents, self.targets)
+
+		# Check which distances are less than detection range
+		a = mag < self.radius
+		# Sum over agent axis 
+		detected = np.sum(a, axis = 0)
+		# convert to boolean, targets with 0 detections set to false.
+		detected = detected > 0
+		# Check detection against previous state
+		# check which new targets were found
+		new = np.logical_and(np.logical_xor(detected, self.old_state), detected) 
+
+		updated = np.logical_or(detected, self.old_state) 
+		self.old_state = updated
+		score = np.sum(new)
+		self.coverage = np.sum(updated)/len(self.targets)	
+
+		return score
+
+
+	def reset(self):
+		self.old_state = np.zeros(len(self.targets))
+
+
+
 # Functions and definitions for set of box objects.
 
 class boxes(object):
@@ -476,6 +745,41 @@ class map(object):
 		box = make_box(80, 80, [0, 0]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
 		wall = make_wall(); wall.start = [-40, 20]; wall.end = [0,20]; self.obsticles.append(wall)
 		wall = make_wall(); wall.start = [40, -20]; wall.end = [0,-20]; self.obsticles.append(wall)
+
+	def map1(self):
+
+		self.dimensions = [80,80]
+
+		# Bounding Walls ---------------------------------
+		box = environment.box(80, 80, [0, 0]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
+
+		room = environment.room(20, 20, 10, 'top', [0, 0]); [self.obsticles.append(room.walls[x]) for x in range(0, len(room.walls))]
+
+		room = environment.room(20, 20, 7, 'bottom', [0, 30]); [self.obsticles.append(room.walls[x]) for x in range(0, len(room.walls))]
+
+		room = environment.room(20, 30, 10, 'bottom', [25, 30]); [self.obsticles.append(room.walls[x]) for x in range(0, len(room.walls))]
+
+		#doorway = environment.doorway(30, 7, 'horizontal', [25, 10]); [self.obsticles.append(doorway.walls[x]) for x in range(0, len(doorway.walls))]
+
+		wall = environment.wall(); wall.start = [10,10]; wall.end = [40,10];
+		self.obsticles.append(wall)
+
+		box = environment.box(3, 3, [20, 0]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
+		box = environment.box(3, 3, [30, 0]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
+		box = environment.box(3, 3, [20, -10]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
+		box = environment.box(3, 3, [30, -10]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
+
+		doorway = environment.doorway(30, 7, 'horizontal', [25, -20]); [self.obsticles.append(doorway.walls[x]) for x in range(0, len(doorway.walls))]
+		doorway = environment.doorway(30, 7, 'vertical', [10, -25]); [self.obsticles.append(doorway.walls[x]) for x in range(0, len(doorway.walls))]
+
+		doorway = environment.doorway(30, 7, 'horizontal', [-25, -10]); [self.obsticles.append(doorway.walls[x]) for x in range(0, len(doorway.walls))]
+
+		room = environment.room(30, 10, 7, 'right', [-35, -25]); [self.obsticles.append(room.walls[x]) for x in range(0, len(room.walls))]
+
+		box = environment.box(15, 3, [-2, -25]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
+		box = environment.box(15, 3, [-18, -25]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
+
+		box = environment.box(30, 5, [-25, 15]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
 
 	
 		
