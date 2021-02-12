@@ -87,7 +87,7 @@ class swarm(object):
 	def iterate(self, noise):
 		global env
 		if self.behaviour == 'aggregate':
-			aggregate(self, self.param)
+			aggregate(self, self.param, noise)
 		if self.behaviour == 'random':
 			random_walk(self, self.param)
 		if self.behaviour == 'rot_clock':
