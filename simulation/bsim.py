@@ -16,6 +16,7 @@ from numpy.linalg import norm
 from scipy.spatial.distance import cdist, pdist, euclidean
 
 from matplotlib import animation, rc
+import simulation.environment as environment
 
 
 
