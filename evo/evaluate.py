@@ -56,7 +56,7 @@ def serial(pop, oldswarm, boxes, genum, timesteps, treecost, field, grid):
 			swarm.map = env
 
 			boxes = bsim.boxes()
-			boxes.set_state('random')
+			boxes.set_state('state1')
 			boxes.sequence = False
 			boxes.radius = 3
 
