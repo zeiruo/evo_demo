@@ -169,7 +169,7 @@ def serial_search(pop, oldswarm, targets, genum, timesteps, treecost, field, gri
 			
 			#score = boxes.tot_collected
 			print('score = ' , score)
-			boxes.reset()
+			targets.reset()
 			swarm.reset()
 			
 		print ('-------------------------------------------------------------------')
