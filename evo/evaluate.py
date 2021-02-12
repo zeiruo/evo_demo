@@ -117,7 +117,7 @@ def serial_search(pop, oldswarm, targets, genum, timesteps, treecost, field, gri
 		#swarm = oldswarm.copy()
 		# Decode genome into executable behaviour tree
 		print( 'Evaluating Individual: ', z, ' Gen: ', genum)
-		bt = tg.tree().decode(pop[z], swarm, boxes)
+		bt = tg.tree().decode(pop[z], swarm, targets)
 		tg.tree().ascii_tree(pop[z])
 		
 		# Set the number of trials per individual to determine fitness
