@@ -164,7 +164,7 @@ def serial_search(pop, oldswarm, targets, genum, timesteps, treecost, field, gri
 				bt.tick()
 				swarm.iterate(noise[t-1])
 				swarm.get_state()
-				score = targets.get_state(swarm, t, timesteps)
+				score = targets.get_state_normal(swarm, t, timesteps)
 				t += 1
 			
 			#score = boxes.tot_collected
