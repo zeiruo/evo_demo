@@ -991,7 +991,7 @@ def aggregate(swarm, param, noise):
 	#W = -np.array([[Wx[n], Wy[n]] for n in range(0, swarm.size)])
 	W = -np.stack((Wx, Wy), axis = 1)
 	swarm.agents += W 
-	swarm.agents = continuous_boundary(swarm.agents, swarm.map)
+	
 
 
 def rotate(swarm, direction, param):
