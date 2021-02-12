@@ -958,6 +958,41 @@ def dispersion(swarm, vector, param, noise):
 	W = -np.stack((Wx, Wy), axis = 1)
 	swarm.agents += W 
 
+def aggregate(swarm, param, noise):
+	
+	R = 20; r = 3.5; A = 6.5; a = 7.5
+
+	#noise = np.random.uniform(-.1, .1, (swarm.size, 2))
+
+	# Compute euclidean distance between agents
+	mag = cdist(swarm.agents, swarm.agents)
+
+	# Compute vectors between agents
+	diff = swarm.agents[:,:,np.newaxis]-swarm.agents.T[np.newaxis,:,:] 
+
+	Avoid = fieldmap_avoidance(swarm)
+	B = beacon(swarm)
+	
+	repel = R*r*np.exp(-mag/r)[:,np.newaxis,:]*diff/(swarm.size-1)	
+	repel = np.sum(repel, axis = 0).T
+
+	attract = A*a*np.exp(-mag/a)[:,np.newaxis,:]*diff/(swarm.size-1)	
+	attract = np.sum(attract, axis = 0).T
+
+	total = 0
+	total += Avoid + B + noise + repel - attract
+	
+	vecx = total.T[0]
+	vecy = total.T[1]
+	angles = np.arctan2(vecy, vecx)
+	Wx = swarm.speed*np.cos(angles)
+	Wy = swarm.speed*np.sin(angles)
+
+	#W = -np.array([[Wx[n], Wy[n]] for n in range(0, swarm.size)])
+	W = -np.stack((Wx, Wy), axis = 1)
+	swarm.agents += W 
+	swarm.agents = continuous_boundary(swarm.agents, swarm.map)
+
 
 def rotate(swarm, direction, param):
 
