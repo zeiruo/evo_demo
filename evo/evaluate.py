@@ -154,7 +154,7 @@ def serial_search(pop, oldswarm, targets, genum, timesteps, treecost, field, gri
 			found = False
 			# IMPORTANT! need to reset behaviours after each run 
 			swarm.beacon_set = []
-			bt = tg.tree().decode(pop[z], swarm, boxes)
+			bt = tg.tree().decode(pop[z], swarm, targets)
 			noise = np.random.uniform(-.1,.1,(timesteps, swarm.size, 2))
 
 			# Reset score
