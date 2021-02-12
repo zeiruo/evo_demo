@@ -960,7 +960,7 @@ def dispersion(swarm, vector, param, noise):
 
 def aggregate(swarm, param, noise):
 	
-	R = 20; r = 3.5; A = 6.5; a = 7.5
+	R = param; r = 3.5; A = 6.5; a = 7.5
 
 	#noise = np.random.uniform(-.1, .1, (swarm.size, 2))
 
