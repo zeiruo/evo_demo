@@ -15,7 +15,7 @@ Evolutionary operators for manipulating trees.
 
 '''
 
-def crossover(offspring, op_prob, blackboard):
+def crossover(offspring, op_prob):
 
 
 	newpop = []
@@ -24,141 +24,136 @@ def crossover(offspring, op_prob, blackboard):
 
 	# Check if there is an even number of indivduals
 
-	if len(offspring) % 2 != 0:
-
-		# There is an odd number of indivduals
-		# add a random individual
-
-		new = tg.individual(tg.tree().make_tree(1, blackboard))
-		offspring.append(new)
-	
-
 	while len(choice) != 0:
 		# Reset parent and children lists
 		branch = []; children = []; point = []
 		parents = list()
-		
-		# Select parents from list of possible choices
-		for b in range(0, 2):
-			sel = random.randint(0,len(choice)-1)
-			parents.append(offspring[choice[sel]].copy())
-			# print 'seleeeee ',sel 
-			choice.remove(choice[sel])
-		
-		# Choose crossover points
-		for c in range(0, 2):
-			hasop = False
-			# Check whether tree has operator
-			for d in range(1, len(parents[c].genome)):
-				if type(parents[c].genome[d]) is Operator:
-					hasop = True
 
-			# Pick an operator node as the crossover point with probability op_prob.
-			if random.random() <= op_prob and hasop == True:
-				# Choose operator
-				p = random.randint(1,len(parents[c].genome)-1)
-				while type(parents[c].genome[p]) is not Operator:
-					 p = random.randint(1,len(parents[c].genome)-1)
-				#opsum += 1
-			else:
-				# Choose leaf node
-				p = random.randint(1,len(parents[c].genome)-1)
-				while type(parents[c].genome[p]) is Operator:
-					 p = random.randint(1,len(parents[c].genome)-1)
-				#leafsum += 1
-			point.append(p)
-		
-		branch.append(parents[0].genome[point[0]])
-		branch.append(parents[1].genome[point[1]])
+		if len(choice) == 1:
+			newpop.append(offspring[choice[0]])
+			choice.remove(choice[0])
+		else:
+			# Select parents from list of possible choices
+			for b in range(0, 2):
+				sel = random.randint(0,len(choice)-1)
+				parents.append(offspring[choice[sel]].copy())
+				# print 'seleeeee ',sel 
+				choice.remove(choice[sel])
+			
+			# Choose crossover points
+			for c in range(0, 2):
+				hasop = False
+				# Check whether tree has operator
+				for d in range(1, len(parents[c].genome)):
+					if type(parents[c].genome[d]) is Operator:
+						hasop = True
 
-		children.append(parents[0].copy())
-		children.append(parents[1].copy())
-
-		flat = []
-		# Flatten genome
-		for z in range(0,2):
-			for x in range(0,len(children[z].genome)):
-				if type(children[z].genome[x]) is list:
-					for y in range(0,len(children[z].genome[x])):
-						flat.append(children[z].genome[x][y])
+				# Pick an operator node as the crossover point with probability op_prob.
+				if random.random() <= op_prob and hasop == True:
+					# Choose operator
+					p = random.randint(1,len(parents[c].genome)-1)
+					while type(parents[c].genome[p]) is not Operator:
+						 p = random.randint(1,len(parents[c].genome)-1)
+					#opsum += 1
 				else:
-					flat.append(children[z].genome[x])
-			children[z].genome = flat
-			# print '\nflattended ind, ' ,flat
+					# Choose leaf node
+					p = random.randint(1,len(parents[c].genome)-1)
+					while type(parents[c].genome[p]) is Operator:
+						 p = random.randint(1,len(parents[c].genome)-1)
+					#leafsum += 1
+				point.append(p)
+			
+			branch.append(parents[0].genome[point[0]])
+			branch.append(parents[1].genome[point[1]])
+
+			children.append(parents[0].copy())
+			children.append(parents[1].copy())
+
 			flat = []
-
-		subtree = [[],[]]
-
-		for i in range(0,2):
-			# Build the subtree for crossover
-			if type(branch[i]) is Operator:
-
-				finished = False
-				treepos = []
-
-				# Add new counter for children
-				treepos.append(children[i].genome[point[i]].size)
-				subtree[i].append(children[i].genome[point[i]])
-				n = (point[i]-1) + 1 
-				while finished != True:
-					n += 1
-					# End current operator if max children is reached.
-					if treepos[len(treepos)-1] == 0:
-
-						# Check if tree is completed and then end generation
-						if treepos[0] == 0 and len(treepos) == 1:
-							# Tree has been completed
-							finished = True
-						# Important! Reduce current tree position in order to move back up the tree
-						del treepos[-1]
-						n -= 1
+			# Flatten genome
+			for z in range(0,2):
+				for x in range(0,len(children[z].genome)):
+					if type(children[z].genome[x]) is list:
+						for y in range(0,len(children[z].genome[x])):
+							flat.append(children[z].genome[x][y])
 					else:
-						# Account for added child
-						treepos[len(treepos)-1] = int(treepos[len(treepos)-1]) - 1
-						if type(children[i].genome[n]) is Operator:
+						flat.append(children[z].genome[x])
+				children[z].genome = flat
+				# print '\nflattended ind, ' ,flat
+				flat = []
 
-							subtree[i].append(children[i].genome[n])
-							treepos.append(children[i].genome[n].size)
+			subtree = [[],[]]
+
+			for i in range(0,2):
+				# Build the subtree for crossover
+				if type(branch[i]) is Operator:
+
+					finished = False
+					treepos = []
+
+					# Add new counter for children
+					treepos.append(children[i].genome[point[i]].size)
+					subtree[i].append(children[i].genome[point[i]])
+					n = (point[i]-1) + 1 
+					while finished != True:
+						n += 1
+						# End current operator if max children is reached.
+						if treepos[len(treepos)-1] == 0:
+
+							# Check if tree is completed and then end generation
+							if treepos[0] == 0 and len(treepos) == 1:
+								# Tree has been completed
+								finished = True
+							# Important! Reduce current tree position in order to move back up the tree
+							del treepos[-1]
+							n -= 1
 						else:
-							subtree[i].append(children[i].genome[n])
+							# Account for added child
+							treepos[len(treepos)-1] = int(treepos[len(treepos)-1]) - 1
+							if type(children[i].genome[n]) is Operator:
 
-				# Remove subtree from genome before crossover
-				for z in range(point[i]+1, n+1):
-					del children[i].genome[point[i]+1]
-			else:
-				# Crossover selection is just a node 
-				subtree[i].append(branch[i])
+								subtree[i].append(children[i].genome[n])
+								treepos.append(children[i].genome[n].size)
+							else:
+								subtree[i].append(children[i].genome[n])
 
-		children[0].genome[point[0]] = subtree[1]
-		children[1].genome[point[1]] = subtree[0]
-
-		flat = []
-		# Flatten genome
-		for z in range(0,2):
-			for x in range(0,len(children[z].genome)):
-				if type(children[z].genome[x]) is list:
-					for y in range(0,len(children[z].genome[x])):
-						flat.append(children[z].genome[x][y])
+					# Remove subtree from genome before crossover
+					for z in range(point[i]+1, n+1):
+						del children[i].genome[point[i]+1]
 				else:
-					flat.append(children[z].genome[x])
-			children[z].genome = flat
-			# print '\nflattended ind, ' ,flat
+					# Crossover selection is just a node 
+					subtree[i].append(branch[i])
+
+			children[0].genome[point[0]] = subtree[1]
+			children[1].genome[point[1]] = subtree[0]
+
 			flat = []
+			# Flatten genome
+			for z in range(0,2):
+				for x in range(0,len(children[z].genome)):
+					if type(children[z].genome[x]) is list:
+						for y in range(0,len(children[z].genome[x])):
+							flat.append(children[z].genome[x][y])
+					else:
+						flat.append(children[z].genome[x])
+				children[z].genome = flat
+				# print '\nflattended ind, ' ,flat
+				flat = []
+			
+			# Generate children ids and record parents
+
+			children[0].parents = list([parents[0].id, parents[1].id])
+			children[1].parents = list([parents[0].id, parents[1].id])
+
+			# print('First child parents are...  ', children[0].parents)
+			# print('Second child parents are...  ', children[1].parents)
 		
-		# Generate children ids and record parents
+			# Generate new ids
+			children[0].id = random.randint(0,2**32)
+			children[1].id = random.randint(0,2**32)
 
-		children[0].parents = list([parents[0].id, parents[1].id])
-		children[1].parents = list([parents[0].id, parents[1].id])
-
-		# print('First child parents are...  ', children[0].parents)
-		# print('Second child parents are...  ', children[1].parents)
-	
-		# Generate new ids
-		children[0].id = random.randint(0,2**32)
-		children[1].id = random.randint(0,2**32)
-
-		newpop.append(children[0])
-		newpop.append(children[1])
+			newpop.append(children[0])
+			newpop.append(children[1])
 
 	return newpop
 
