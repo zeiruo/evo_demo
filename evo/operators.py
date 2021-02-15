@@ -15,12 +15,22 @@ Evolutionary operators for manipulating trees.
 
 '''
 
-def crossover(offspring, op_prob):
+def crossover(offspring, op_prob, blackboard):
 
 
 	newpop = []
 	choice = list(range(0, len(offspring)))
 	parents = list()
+
+	# Check if there is an even number of indivduals
+
+	if len(offspring) % 2 != 0:
+
+		# There is an odd number of indivduals
+		# add a random individual
+
+		new = tg.individual(tg.tree().make_tree(1, blackboard))
+		offspring.append(new)
 	
 
 	while len(choice) != 0:
