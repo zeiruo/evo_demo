@@ -146,7 +146,7 @@ def serial_search(pop, oldswarm, targets, genum, timesteps, treecost, field, gri
 
 			targets = bsim.target_set()
 			targets.set_state('set1')
-			targets.radius = 2.5
+			targets.radius = 5
 			targets.reset()
 
 			fitness = 0
@@ -155,7 +155,7 @@ def serial_search(pop, oldswarm, targets, genum, timesteps, treecost, field, gri
 			# IMPORTANT! need to reset behaviours after each run 
 			swarm.beacon_set = []
 			bt = tg.tree().decode(pop[z], swarm, targets)
-			noise = np.random.uniform(-.1,.1,(timesteps, swarm.size, 2))
+			noise = np.random.uniform(-.01,.01,(timesteps, swarm.size, 2))
 
 			# Reset score
 			score = 0
