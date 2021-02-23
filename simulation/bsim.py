@@ -88,6 +88,8 @@ class swarm(object):
 		global env
 		if self.behaviour == 'aggregate':
 			aggregate(self, self.param, noise)
+		if self.behaviour == 'flocking':
+			flocking(self, self.param, noise)
 		if self.behaviour == 'random':
 			random_walk(self, self.param)
 		if self.behaviour == 'rot_clock':
