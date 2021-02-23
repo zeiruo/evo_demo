@@ -68,7 +68,18 @@ class swarm(object):
 		self.headings = 0.0314*np.random.randint(-100,100 ,self.size)
 		for n in range(self.size):
 			self.agents[n] = np.array([dim*n - (dim*(self.size-1)/2) + self.origin[0], 0 + self.origin[1]])
+	
+	def gen_agents_uniform(self, env):
+
+		dim = 0.001
+		self.dead = np.zeros(self.size)
+		self.agents = np.zeros((self.size,2))
+		self.headings = 0.0314*np.random.randint(-100,100 ,self.size)
 		
+		x = np.random.uniform(-env.dimensions[1]/2, env.dimensions[1]/2, self.size)
+		y = np.random.uniform(-env.dimensions[0]/2, env.dimensions[0]/2, self.size)
+
+		self.agents = np.stack((x,y), axis = 1)
 
 	def reset(self):
 
@@ -752,9 +763,9 @@ class map(object):
 
 	def empty(self):
 
-		box = make_box(80, 80, [0, 0]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
+		#box = make_box(50, 50, [0, 0]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
 
-		self.dimensions = [80, 80]
+		self.dimensions = [50, 50]
 
 
 
@@ -980,7 +991,7 @@ def continuous_boundary(agents, map):
 	agentsy = agents.T[1]
 
 	# Set boundary size relative to environment dimensions
-	scale = 2
+	scale = 1
 
 	# Check left and right boundaries
 	right = agentsx >=  scale*(map.dimensions[1]/2)
