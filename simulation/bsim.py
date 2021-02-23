@@ -748,6 +748,13 @@ class map(object):
 			self.walls[2*n] = np.array([self.obsticles[n].start[0], self.obsticles[n].start[1]])
 			self.walls[2*n+1] = np.array([self.obsticles[n].end[0], self.obsticles[n].end[1]])
 
+	def empty(self):
+
+		box = make_box(80, 80, [0, 0]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
+
+		self.dimensions = [80, 80]
+
+
 
 	def env1(self):
 		# Bounding Walls ---------------------------------
