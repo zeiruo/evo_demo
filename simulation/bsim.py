@@ -956,7 +956,101 @@ def dispersion(swarm, vector, param, noise):
 
 	#W = -np.array([[Wx[n], Wy[n]] for n in range(0, swarm.size)])
 	W = -np.stack((Wx, Wy), axis = 1)
+	swarm.agents += W
+
+def continuous_boundary(agents, map):
+
+	# Check if agent passes wall bounds. i.e. does agent intersect with area.
+
+	# If yes, which side has the agent passed through?
+
+	# Mirror agent back around to opposite wall.
+
+	# split agent positions into x and y arrays
+	agentsx = agents.T[0]
+	agentsy = agents.T[1]
+
+	# Set boundary size relative to environment dimensions
+	scale = 2
+
+	# Check left and right boundaries
+	right = agentsx >=  scale*(map.dimensions[1]/2)
+	left = agentsx <= -scale*(map.dimensions[1]/2)
+
+	agentsx += -scale*(map.dimensions[1])*right
+	agentsx += scale*(map.dimensions[1])*left
+
+	# Check top and bottom boundaries
+	top = agentsy >=  scale*(map.dimensions[0]/2)
+	bottom = agentsy <= -scale*(map.dimensions[0]/2)
+
+	agentsy += -scale*(map.dimensions[0])*top
+	agentsy += scale*(map.dimensions[0])*bottom
+
+	agents = np.stack((agentsx, agentsy), axis = 1)	
+
+	return agents
+
+
+def flocking(swarm, param, noise):
+
+	R = 30; r = 3.5; A = 10.5; a = 5.5
+
+	# Compute euclidean distance between agents
+	mag = cdist(swarm.agents, swarm.agents)
+
+	# Determine headings
+	nearest = mag <= 2
+
+	# n x n matrix of headings of agents which are adjacent
+	neighbour_headings = swarm.headings*nearest
+
+	# Sum headings for each agent
+	neighbour_headings_tot = np.sum(neighbour_headings, axis = 1)
+
+	# average by number of neighbours
+
+	new_headings = neighbour_headings_tot/(np.sum(nearest, axis = 1))
+
+	# average headings with neighbours
+	swarm.headings =  (new_headings + 0.01*np.random.randint(-10,11, swarm.size))
+
+	# Calculate new heading vector
+	strength = 10
+	gx = strength*np.cos(swarm.headings)
+	gy = strength*np.sin(swarm.headings)
+	G = -np.array([[gx[n], gy[n]] for n in range(0, swarm.size)])
+	
+
+	# Compute vectors between agents
+	diff = swarm.agents[:,:,np.newaxis]-swarm.agents.T[np.newaxis,:,:] 
+
+	#Avoid = fieldmap_avoidance(swarm)
+	
+	repel = R*r*np.exp(-mag/r)[:,np.newaxis,:]*diff/(swarm.size-1)	
+	repel = np.sum(repel, axis = 0).T
+
+	attract = A*a*np.exp(-mag/a)[:,np.newaxis,:]*diff/(swarm.size-1)	
+	attract = np.sum(attract, axis = 0).T
+
+	total = 0
+	total +=  noise + repel + G - attract
+	
+	vecx = total.T[0]
+	vecy = total.T[1]
+	angles = np.arctan2(vecy, vecx)
+
+	Wx = swarm.speed*np.cos(angles)
+	Wy = swarm.speed*np.sin(angles)
+
+	#W = -np.array([[Wx[n], Wy[n]] for n in range(0, swarm.size)])
+	W = -np.stack((Wx, Wy), axis = 1)
 	swarm.agents += W 
+	swarm.agents = continuous_boundary(swarm.agents, swarm.map)
+	
+
+	
+
 
 def aggregate(swarm, param, noise):
 	
