@@ -70,7 +70,7 @@ class swarm(object):
 		for n in range(self.size):
 			self.agents[n] = np.array([dim*n - (dim*(self.size-1)/2) + self.origin[0], 0 + self.origin[1]])
 
-		self.shadows = np.zeros((3,swarm.size,2))
+		self.shadows = np.zeros((4,swarm.size,2))
 	
 	def gen_agents_uniform(self, env):
 
@@ -83,7 +83,7 @@ class swarm(object):
 		y = np.random.uniform(-env.dimensions[0]/2, env.dimensions[0]/2, self.size)
 
 		self.agents = np.stack((x,y), axis = 1)
-		self.shadows = np.zeros((3,self.size,2))
+		self.shadows = np.zeros((4,self.size,2))
 
 	def reset(self):
 
@@ -149,10 +149,14 @@ class swarm(object):
 		# self.lower = np.quantile(self.agents, 0.25, axis = 0)
 
 		# Shift shadows
-		for n in range(len(self.shadows)-1):
-			
-			self.shadows[len(self.shadows)-n] = self.shadows[len(self.shadows)-n-1]
-		self.shadows[0] = swarm.agents
+		
+		# for n in range(len(self.shadows)):
+		# 	print('\nshadows length %d \n' % len(self.shadows))	
+		# 	self.shadows[len(self.shadows)-n] = self.shadows[len(self.shadows)-n-1]
+		self.shadows[3] = self.shadows[2]
+		self.shadows[2] = self.shadows[1]
+		self.shadows[1] = self.shadows[0]
+		self.shadows[0] = self.agents
 
 	def copy(self):
 		newswarm = swarm()
@@ -775,7 +779,7 @@ class map(object):
 
 		#box = make_box(50, 50, [0, 0]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
 
-		self.dimensions = [50, 50]
+		self.dimensions = [70, 70]
 
 
 
