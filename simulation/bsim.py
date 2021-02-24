@@ -56,6 +56,7 @@ class swarm(object):
 		self.boxnum = []
 
 		self.headings = []
+		self.shadows = []
 		
 
 
@@ -68,6 +69,8 @@ class swarm(object):
 		self.headings = 0.0314*np.random.randint(-100,100 ,self.size)
 		for n in range(self.size):
 			self.agents[n] = np.array([dim*n - (dim*(self.size-1)/2) + self.origin[0], 0 + self.origin[1]])
+
+		self.shadows = np.zeros((3,swarm.size,2))
 	
 	def gen_agents_uniform(self, env):
 
@@ -80,6 +83,7 @@ class swarm(object):
 		y = np.random.uniform(-env.dimensions[0]/2, env.dimensions[0]/2, self.size)
 
 		self.agents = np.stack((x,y), axis = 1)
+		self.shadows = np.zeros((3,swarm.size,2))
 
 	def reset(self):
 
@@ -143,6 +147,12 @@ class swarm(object):
 		self.median = np.median(self.agents, axis = 0)
 		# self.upper = np.quantile(self.agents, 0.75, axis = 0)
 		# self.lower = np.quantile(self.agents, 0.25, axis = 0)
+
+		# Shift shadows
+		for n in range(len(self.shadows)):
+			
+			self.shadows[3-n] = self.shadows[3-n-1]
+		self.shadows[0] = swarm.agents
 
 	def copy(self):
 		newswarm = swarm()
