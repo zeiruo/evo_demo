@@ -151,7 +151,7 @@ class swarm(object):
 		# Shift shadows
 		for n in range(len(self.shadows)):
 			
-			self.shadows[3-n] = self.shadows[3-n-1]
+			self.shadows[len(self.shadows)-n] = self.shadows[len(self.shadows)-n-1]
 		self.shadows[0] = swarm.agents
 
 	def copy(self):
