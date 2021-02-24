@@ -83,7 +83,7 @@ class swarm(object):
 		y = np.random.uniform(-env.dimensions[0]/2, env.dimensions[0]/2, self.size)
 
 		self.agents = np.stack((x,y), axis = 1)
-		self.shadows = np.zeros((3,swarm.size,2))
+		self.shadows = np.zeros((3,self.size,2))
 
 	def reset(self):
 
