@@ -149,7 +149,7 @@ class swarm(object):
 		# self.lower = np.quantile(self.agents, 0.25, axis = 0)
 
 		# Shift shadows
-		for n in range(len(self.shadows)):
+		for n in range(len(self.shadows)-1):
 			
 			self.shadows[len(self.shadows)-n] = self.shadows[len(self.shadows)-n-1]
 		self.shadows[0] = swarm.agents
