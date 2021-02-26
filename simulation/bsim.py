@@ -1028,7 +1028,7 @@ def continuous_boundary(agents, map):
 
 def flocking(swarm, param, noise):
 
-	R = 30; r = 3.5; A = 10.5; a = 5.5
+	R = 30; r = 3.5; A = 10; a = 3.5
 
 	# Compute euclidean distance between agents
 	mag = cdist(swarm.agents, swarm.agents)

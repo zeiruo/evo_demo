@@ -25,7 +25,7 @@ produced at the end of the evolution.
 
 def flocking(swarm, repel, attract, comm_range, noise):
 
-	R = repel; r = 3.5; A = attract; a = 5.5
+	R = repel; r = 3.5; A = attract; a = 3.5
 
 	# Compute euclidean distance between agents
 	mag = cdist(swarm.agents, swarm.agents)
@@ -80,6 +80,35 @@ def flocking(swarm, repel, attract, comm_range, noise):
 	swarm.agents = bsim.continuous_boundary(swarm.agents, swarm.map)
 	
 
+# First set up the figure, the axis, and the plot element we want to animate
+fig, ax1 = plt.subplots( figsize=(10,10), dpi=80, facecolor='w', edgecolor='k')
+#plt.close()
+
+dim = 40
+ax1.set_xlim((-dim, dim))
+ax1.set_ylim((-dim, dim))
+
+# Set how data is plotted within animation loop
+global line, line1
+# Agent plotting 
+line, = ax1.plot([], [], 'rh', markersize = 6, markeredgecolor="black", alpha = 0.9)
+# shadow plotting
+line1, = ax1.plot([], [], 'bh', markersize = 6, markeredgecolor="black", alpha = 0.2)
+line2, = ax1.plot([], [], 'bh', markersize = 6, markeredgecolor="black", alpha = 0.2)
+line3, = ax1.plot([], [], 'bh', markersize = 6, markeredgecolor="black", alpha = 0.2)
+
+fsize = 12
+
+time_text = ax1.text(-20, 26, '', fontsize = fsize)
+box_text = ax1.text(3, 26, '', color = 'red', fontsize = fsize)
+
+line.set_data([], [])
+line1.set_data([], [])
+
+def init():
+    line.set_data([], [])
+    line1.set_data([], [])
+    return (line, line1,)
 
 swarmsize = 300
 swarm = bsim.swarm()
@@ -95,66 +124,19 @@ swarm.gen_agents_uniform(env)
 
 timesteps = 600
 
-# First set up the figure, the axis, and the plot element we want to animate
-fig, (ax1, ax2) = plt.subplots(nrows=1,ncols=2, figsize=(16,8), dpi=80, facecolor='w', edgecolor='k')
-#plt.close()
-
-dim = 40
-ax1.set_xlim((-dim, dim))
-ax1.set_ylim((-dim, dim))
-
-ax2.set_xlim((0, timesteps))
-ax2.set_ylim((0, 1))
-
-# Set how data is plotted within animation loop
-global line, line1
-# Agent plotting 
-line, = ax1.plot([], [], 'rh', markersize = 6, markeredgecolor="black", alpha = 0.9)
-# shadow plotting
-line1, = ax1.plot([], [], 'bh', markersize = 6, markeredgecolor="black", alpha = 0.2)
-line2, = ax1.plot([], [], 'bh', markersize = 6, markeredgecolor="black", alpha = 0.2)
-line3, = ax1.plot([], [], 'bh', markersize = 6, markeredgecolor="black", alpha = 0.2)
-
-box_line, = ax2.plot([],[], 'r-', markersize = 5)
-
-fsize = 12
-
-time_text = ax1.text(-20, 26, '', fontsize = fsize)
-box_text = ax1.text(3, 26, '', color = 'red', fontsize = fsize)
-
-line.set_data([], [])
-line1.set_data([], [])
-
-def init():
-    line.set_data([], [])
-    line1.set_data([], [])
-    old_positions = np.zeros((swarm.size,2))
-    return (line, line1, box_line,)
-
-
-ax2.set_yticks(np.arange(0, 1, 0.1))
-ax2.grid()
-
-# plot the walls
-[ax1.plot([swarm.map.obsticles[a].start[0], swarm.map.obsticles[a].end[0]], 
-    [swarm.map.obsticles[a].start[1], swarm.map.obsticles[a].end[1]], 'k-', lw=2) for a in range(len(swarm.map.obsticles))]
-
 # Declare agent motion noise
 noise = np.random.uniform(-.1,.1,(timesteps, swarm.size, 2))
-score = 0
 
 # Set the swarms behaviour
 swarm.behaviour = 'flocking'
 swarm.param = 0.07
 
-box_data = []
 time_data = []
-
 
 def animate(i):
 
     #swarm.iterate(noise[i-1])
-    flocking(swarm, repel=30, attract=10, comm_range=3, noise=noise[i-1])
+    flocking(swarm, repel=40, attract=20, comm_range=1, noise=noise[i-1])
     swarm.get_state()
     time_data.append(i)
     
@@ -170,12 +152,12 @@ def animate(i):
     line.set_data(x, y)
     old_positions = swarm.agents
 
-    return ( line1, line2, line3, box_line, time_text, line,)
+    return (line1, line2, line3, time_text, line,)
 
 anim = animation.FuncAnimation(fig, animate, init_func=init,
                             frames=timesteps, interval=50, blit=True)
 
-#anim.save('try_animation.mp4', fps=20, dpi=120)
+# anim.save('sim_animation.mp4', fps=60, dpi=200)
 # Note: below is the part which makes it work on Colab
 #rc('animation', html='jshtml')
 anim
