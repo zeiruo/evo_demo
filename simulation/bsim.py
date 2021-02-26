@@ -70,7 +70,7 @@ class swarm(object):
 		for n in range(self.size):
 			self.agents[n] = np.array([dim*n - (dim*(self.size-1)/2) + self.origin[0], 0 + self.origin[1]])
 
-		self.shadows = np.zeros((4,swarm.size,2))
+		self.shadows = np.zeros((4,self.size,2))
 	
 	def gen_agents_uniform(self, env):
 
