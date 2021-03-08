@@ -515,6 +515,24 @@ class boxes(object):
 			self.broadcast = list(range(0, len(self.boxes)))
 			self.choice = random.randint(0, len(self.boxes))
 
+		if state == 'state2':
+
+			self.boxes = np.array([[-20,-8],[-20,4],[-20,7],[-20,-10],[-20,20],[-20,22],[-20,18]
+									,[-12,0],[-12,2],[-12,4],[-12,-2],[-12,-4],[-13,-12],[-13,-14]
+									,[-11,-12],[-11,-14],[-12,10],[-12,13],[-12,18],[-12,22],[8,-7]
+									,[18,-7],[20,-7],[22,-7],[6,-19],[16,0],[18,-9],[20,-9]
+									,[20,-20],[10,-20],[21,-17]
+									,[-22,-20],[-21,-18],[5,12],[-21,-14],[0,10],[-21,1]
+									,[-20,-22],[-18,-22],[-16,-22],[-14,-21],[0,-17],[4,-10],[1,-20]
+									,[22,20],[10,12],[17,17],[19,10],[20,20],[22,17],[7,20]
+									,[-12,-12],[-5,-10],[-16,2]])
+			self.picked = np.zeros(len(self.boxes))
+			self.collected = np.zeros(len(self.boxes))
+			self.broadcast = np.zeros(len(self.boxes))
+			# Randomly set the first box to be collected
+			self.broadcast = list(range(0, len(self.boxes)))
+			self.choice = random.randint(0, len(self.boxes))
+
 
 	# Check the state of the boxes 
 	def get_state(self, swarm, t):
@@ -565,6 +583,36 @@ class boxes(object):
 
 	def reset(self):
 		pass
+
+
+class pheromones(object):
+
+	def __init__(self):
+
+		self.pheromone_points = []
+		self.life = 100
+		self.life_span = []
+
+
+	def update(self, swarm, boxes):
+
+		# Look at which agents are carrying boxes.
+
+
+		# Agents which are carrying boxes should drop pheromones
+
+		for n in range(swarm.size):
+
+			# Agent is holding box
+			if swarm.holding[n] == 1:
+				self.pheromone_points = np.array([[self.beacon.pos[0], self.beacon.pos[1]]])
+			else:	
+				self.swarm.beacon_att = np.append(self.swarm.beacon_att, np.array([[self.beacon.pos[0], self.beacon.pos[1]]]), axis=0)
+
+
+		# Decay the life of pheromone in the environment
+
+
 
 
 # Environment objects which are used within the map class. 
@@ -806,44 +854,53 @@ class map(object):
 
 	def env2(self):
 		# Bounding Walls ---------------------------------
-		box = make_box(80, 80, [0, 0]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
-		wall = make_wall(); wall.start = [-40, 20]; wall.end = [0,20]; self.obsticles.append(wall)
-		wall = make_wall(); wall.start = [40, -20]; wall.end = [0,-20]; self.obsticles.append(wall)
+		box = make_box(50, 50, [0, 0]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
+		
 
-	def map1(self):
+		room = environment.room(20, 10, 6, 'left', [20, 15]); [self.obsticles.append(room.walls[x]) for x in range(0, len(room.walls))]
+		room = environment.room(20, 10, 6, 'left', [20, -15]); [self.obsticles.append(room.walls[x]) for x in range(0, len(room.walls))]
+
+		room = environment.room(15, 8, 7, 'left', [-12, 0]); [self.obsticles.append(room.walls[x]) for x in range(0, len(room.walls))]
+		wall = make_wall(); wall.start = [-16, 18]; wall.end = [-16,7.5]; self.obsticles.append(wall)
+		wall = make_wall(); wall.start = [-8, 25]; wall.end = [-8,15]; self.obsticles.append(wall)
+
+		wall = make_wall(); wall.start = [-16, -7.5]; wall.end = [-16,-19]; self.obsticles.append(wall)
+
+		room = environment.room(12, 8, 8, 'right', [-12, -13.5]); [self.obsticles.append(room.walls[x]) for x in range(0, len(room.walls))]
+
+	def env3(self):
 
 		self.dimensions = [80,80]
-
+		
 		# Bounding Walls ---------------------------------
 		box = environment.box(80, 80, [0, 0]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
 
-		room = environment.room(20, 20, 10, 'top', [0, 0]); [self.obsticles.append(room.walls[x]) for x in range(0, len(room.walls))]
+		wall = environment.wall(); wall.start = [-10,-10]; wall.end = [10,-10]; self.obsticles.append(wall)
 
-		room = environment.room(20, 20, 7, 'bottom', [0, 30]); [self.obsticles.append(room.walls[x]) for x in range(0, len(room.walls))]
+		doorway = environment.doorway(20, 7, 'horizontal', [0, 10]); [self.obsticles.append(doorway.walls[x]) for x in range(0, len(doorway.walls))]
+		doorway = environment.doorway(20, 7, 'vertical', [10, 0]); [self.obsticles.append(doorway.walls[x]) for x in range(0, len(doorway.walls))]
+		doorway = environment.doorway(20, 7, 'vertical', [-10, 0]); [self.obsticles.append(doorway.walls[x]) for x in range(0, len(doorway.walls))]
 
-		room = environment.room(20, 30, 10, 'bottom', [25, 30]); [self.obsticles.append(room.walls[x]) for x in range(0, len(room.walls))]
+		doorway = environment.doorway(40, 10, 'horizontal', [0, 20]); [self.obsticles.append(doorway.walls[x]) for x in range(0, len(doorway.walls))]
+		#doorway = environment.doorway(40, 10, 'horizontal', [0, -20]); [self.obsticles.append(doorway.walls[x]) for x in range(0, len(doorway.walls))]
 
-		#doorway = environment.doorway(30, 7, 'horizontal', [25, 10]); [self.obsticles.append(doorway.walls[x]) for x in range(0, len(doorway.walls))]
+		wall = environment.wall(); wall.start = [-20, -20]; wall.end = [20,-20]; self.obsticles.append(wall)
 
-		wall = environment.wall(); wall.start = [10,10]; wall.end = [40,10];
-		self.obsticles.append(wall)
+		doorway = environment.doorway(30, 10, 'vertical', [-20, -5]); [self.obsticles.append(doorway.walls[x]) for x in range(0, len(doorway.walls))]
 
-		box = environment.box(3, 3, [20, 0]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
-		box = environment.box(3, 3, [30, 0]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
-		box = environment.box(3, 3, [20, -10]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
-		box = environment.box(3, 3, [30, -10]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
+		wall = environment.wall(); wall.start = [-40, 10]; wall.end = [-20,10]; self.obsticles.append(wall)
 
-		doorway = environment.doorway(30, 7, 'horizontal', [25, -20]); [self.obsticles.append(doorway.walls[x]) for x in range(0, len(doorway.walls))]
-		doorway = environment.doorway(30, 7, 'vertical', [10, -25]); [self.obsticles.append(doorway.walls[x]) for x in range(0, len(doorway.walls))]
+		wall = environment.wall(); wall.start = [20, 30]; wall.end = [20,-20]; self.obsticles.append(wall)
 
-		doorway = environment.doorway(30, 7, 'horizontal', [-25, -10]); [self.obsticles.append(doorway.walls[x]) for x in range(0, len(doorway.walls))]
+		wall = environment.wall(); wall.start = [20, -20]; wall.end = [40,-20]; self.obsticles.append(wall)
 
-		room = environment.room(30, 10, 7, 'right', [-35, -25]); [self.obsticles.append(room.walls[x]) for x in range(0, len(room.walls))]
+		wall = environment.wall(); wall.start = [-20, 40]; wall.end = [-20,20]; self.obsticles.append(wall)
 
-		box = environment.box(15, 3, [-2, -25]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
-		box = environment.box(15, 3, [-18, -25]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
+		doorway = environment.doorway(10, 7, 'vertical', [-20, 15]); [self.obsticles.append(doorway.walls[x]) for x in range(0, len(doorway.walls))]
 
-		box = environment.box(30, 5, [-25, 15]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
+		room = environment.room(10, 30, 7, 'top', [-25, -35]); [self.obsticles.append(room.walls[x]) for x in range(0, len(room.walls))]
+
+		room = environment.room(10, 30, 7, 'top', [25, -35]); [self.obsticles.append(room.walls[x]) for x in range(0, len(room.walls))]
 
 	
 		
@@ -1175,10 +1232,60 @@ def random_walk(swarm, param):
 	
 	a = np.zeros((swarm.size, 2))
 
+	# mag = cdist(swarm.agents, swarm.agents)
+
+	# # Compute vectors between agents
+	# diff = swarm.agents[:,:,np.newaxis]-swarm.agents.T[np.newaxis,:,:] 
+
+	# R = 5; r = 5
+	# repel = R*r*np.exp(-mag/r)[:,np.newaxis,:]*diff/(swarm.size-1)	
+	# repel = np.sum(repel, axis = 0).T
+
 	B = np.zeros((swarm.size, 2))
 	#B = beacon(swarm)
 	A = avoidance(swarm.agents, swarm.map)
-	a += A + G + B
+	a += A + G + B 
+
+	vecx = a.T[0]
+	vecy = a.T[1]
+
+	angles = np.arctan2(vecy, vecx)
+	Wx = swarm.speed*np.cos(angles)
+	Wy = swarm.speed*np.sin(angles)
+
+	W = -np.stack((Wx, Wy), axis = 1)
+	swarm.agents += W
+
+def foraging(swarm, param):
+
+	alpha = 0.01; beta = 50
+
+	noise = param*np.random.randint(-beta, beta, (swarm.size))
+	swarm.headings += noise
+
+	# Calculate new heading vector
+	gx = 1*np.cos(swarm.headings)
+	gy = 1*np.sin(swarm.headings)
+	G = -np.array([[gx[n], gy[n]] for n in range(0, swarm.size)])
+
+	# Agent avoidance
+	R = 20; r = 2; A = 1; a = 20	
+	
+	a = np.zeros((swarm.size, 2))
+
+	# mag = cdist(swarm.agents, swarm.agents)
+
+	# # Compute vectors between agents
+	# diff = swarm.agents[:,:,np.newaxis]-swarm.agents.T[np.newaxis,:,:] 
+
+	# R = 5; r = 5
+	# repel = R*r*np.exp(-mag/r)[:,np.newaxis,:]*diff/(swarm.size-1)	
+	# repel = np.sum(repel, axis = 0).T
+
+	B = np.zeros((swarm.size, 2))
+	#B = beacon(swarm)
+	A = avoidance(swarm.agents, swarm.map)
+	a += A + G + B 
 
 	vecx = a.T[0]
 	vecy = a.T[1]
