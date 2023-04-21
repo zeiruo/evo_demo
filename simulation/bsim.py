@@ -489,7 +489,7 @@ class boxes(object):
 
 		if state == 'random':
 			
-			self.boxes = np.random.randint(-24,24, (50,2))
+			self.boxes = np.random.randint(-24,24, (30,2))
 			self.picked = np.zeros(len(self.boxes))
 			self.collected = np.zeros(len(self.boxes))
 			self.broadcast = np.zeros(len(self.boxes))
