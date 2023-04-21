@@ -825,9 +825,9 @@ class map(object):
 
 	def empty(self):
 
-		#box = make_box(50, 50, [0, 0]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
+		box = make_box(50, 50, [0, 0]);# [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
 
-		self.dimensions = [70, 70]
+		#self.dimensions = [70, 70]
 
 
 
