@@ -857,16 +857,7 @@ class map(object):
 		box = make_box(50, 50, [0, 0]); [self.obsticles.append(box.walls[x]) for x in range(0, len(box.walls))]
 		
 
-		room = environment.room(20, 10, 6, 'left', [20, 15]); [self.obsticles.append(room.walls[x]) for x in range(0, len(room.walls))]
-		room = environment.room(20, 10, 6, 'left', [20, -15]); [self.obsticles.append(room.walls[x]) for x in range(0, len(room.walls))]
 
-		room = environment.room(15, 8, 7, 'left', [-12, 0]); [self.obsticles.append(room.walls[x]) for x in range(0, len(room.walls))]
-		wall = make_wall(); wall.start = [-16, 18]; wall.end = [-16,7.5]; self.obsticles.append(wall)
-		wall = make_wall(); wall.start = [-8, 25]; wall.end = [-8,15]; self.obsticles.append(wall)
-
-		wall = make_wall(); wall.start = [-16, -7.5]; wall.end = [-16,-19]; self.obsticles.append(wall)
-
-		room = environment.room(12, 8, 8, 'right', [-12, -13.5]); [self.obsticles.append(room.walls[x]) for x in range(0, len(room.walls))]
 
 	def env3(self):
 
